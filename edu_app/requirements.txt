@@ -1,0 +1,197 @@
+Bạn là "App Builder". Hãy tạo một ứng dụng web 1 trang tên **"LỚP HỌC TÍCH CỰC"** (tiếng Việt), phong cách thiết kế **Material Design 3** hiện đại.
+
+### MỤC TIÊU APP
+Giúp giáo viên chủ nhiệm (GVCN) quản lý điểm thưởng/phạt học sinh với hệ thống gamification:
+- Tick điểm cộng/trừ nhanh cho từng học sinh
+- Hệ thống tự động nâng hạng theo thang: **Đồng (0-49) → Bạc (50-99) → Vàng (100-199) → Kim Cương (200+)**
+- Đổi điểm lấy quà (học sinh đủ điểm → giáo viên xác nhận đổi → trừ điểm)
+- Bảng xếp hạng Top 10 học sinh
+- Import/Export Excel
+
+---
+
+### YÊU CẦU GIAO DIỆN (MATERIAL DESIGN 3)
+- **Màu sắc chính:** Tím #6750A4 (primary), Cam #FF6D00 (accent), Trắng kem #FAF9F6 (nền)
+- **Typography:** Roboto (tiêu đề), Open Sans (nội dung)
+- **Layout:** Card dạng elevated với shadow động, góc bo 16px
+- **Header:** 
+  - Logo app (icon lớp học) + text "LỚP HỌC TÍCH CỰC"
+  - Dropdown chọn lớp
+  - Nút: "Xếp hạng" | "Cửa hàng" | "Cài đặt" (icon + text)
+- **Body:** Grid view học sinh (5 cột desktop, 3 tablet, 1-2 mobile)
+
+### MỖI THẺ HỌC SINH (Card Style)
+```
+┌─────────────────────────────┐
+│  [Avatar]     🏆 Huy hiệu   │
+│                             │
+│  ★ Nguyễn Văn A             │
+│  ━━━━━━━━━━━━━━━━━━━━━━   │
+│  125 điểm | Vàng            │
+│  ▰▰▰▰▰▰▰▱▱▱ 75% → Kim Cương│
+│                             │
+│  [+1] [+3] [+10]  [-1] [-5] │
+└─────────────────────────────┘
+```
+
+- Avatar hình vuông bo góc (100px)
+- **Icon hạng:** 
+  - 🥉 Đồng (màu nâu #CD7F32)
+  - 🥈 Bạc (màu xám bạc #C0C0C0)
+  - 🥇 Vàng (màu vàng #FFD700)
+  - 💎 Kim Cương (màu xanh kim cương #B9F2FF)
+- Tên học sinh (font bold 16px) + icon ⭐ nếu trong Top 3
+- Progress bar dạng **segmented** (10 đoạn, sáng dần)
+- Text: "125/200 - Còn 75 điểm lên Kim Cương"
+- Nút cộng: viền tím, hover sáng lên
+- Nút trừ: viền cam đỏ, hover tối lại
+
+### MODAL CHI TIẾT HỌC SINH
+Click vào thẻ → mở Drawer từ phải sang trái (Material style):
+- **Tab "Hoạt động":** Timeline dọc với icon + màu
+  - `[+5 | 10:30 AM] Nộp bài đúng hạn ✅`
+  - `[-2 | 2:15 PM] Quên sách giáo khoa ⚠️`
+- **Tab "Phần thưởng":** Grid quà + số lần đã đổi
+- **Tab "Thống kê":** Biểu đồ cột (cộng/trừ/đổi quà theo tháng)
+
+### FOOTER
+Sticky bottom bar:
+- `[+ Thêm HS] [📥 Import] [📤 Export] [🎁 Quà]`
+
+---
+
+### CÁC TÍNH NĂNG CHI TIẾT
+
+#### 1. QUẢN LÝ HỌC SINH
+- **Thêm học sinh:** Dialog nhập Tên + Số thứ tự + Upload avatar
+- **Import Excel:** Hỗ trợ .xlsx/.csv, cột: `Tên`, `Số thứ tự`, `Điểm ban đầu`
+- **Avatar mặc định:** Icon SVG với chữ cái đầu + màu gradient random
+
+#### 2. HỆ THỐNG ĐIỂM
+- **Nút +1, +3, +10:** Click → popup nhỏ nhập lý do (không bắt buộc) → lưu
+- **Nút -1, -5:** Click → popup **bắt buộc** nhập lý do → xác nhận
+- **Animation:**
+  - `+X` bay lên, phóng to, mờ dần (màu tím)
+  - `-X` rơi xuống, nhỏ lại, mờ dần (màu cam đỏ)
+- **Lịch sử:** Lưu vào `pointHistory: [{timestamp, change, reason, pointsAfter}]`
+
+#### 3. HỆ THỐNG HẠN GẠC (GAMIFICATION)
+Thang điểm:
+- **🥉 Đồng (0-49 điểm)** → Màu nâu
+- **🥈 Bạc (50-99 điểm)** → Màu xám bạc
+- **🥇 Vàng (100-199 điểm)** → Màu vàng
+- **💎 Kim Cương (200+ điểm)** → Màu xanh lam sáng
+
+**Progress bar logic:**
+- VD: 125 điểm → Vàng → Còn 75 điểm để đạt Kim Cương
+- Progress: `(125 - 100) / (200 - 100) = 25%`
+
+**Khi lên hạng:**
+- Hiệu ứng: Confetti màu tương ứng (CDN: canvas-confetti)
+- Modal: "🎉 Chúc mừng [Tên] thăng hạng **KIM CƯƠNG**! 💎"
+- Badge phóng to + glow effect (CSS animation)
+
+#### 4. ĐỔI QUÀ
+**Cửa hàng quà:** Grid card dạng product (3 cột desktop)
+
+Danh sách quà:
+- 🎫 Vé miễn 1 bài kiểm tra (40 điểm)
+- 🪑 Chọn ghế ngồi tự do (60 điểm)
+- ✏️ Cộng 10 điểm bài thi (90 điểm)
+- 👔 Ngồi ghế Giáo viên 1 tiết (120 điểm)
+- 📖 Phiếu mua sách 100k (180 điểm)
+- 🎁 Hộp quà bí ẩn (250 điểm)
+
+**Card quà:**
+- Icon lớn (64px)
+- Tên quà (font bold)
+- Mô tả ngắn
+- Số điểm (chip dạng pill)
+- Nút "Đổi ngay" (disabled nếu không đủ điểm)
+
+**Flow đổi quà:**
+1. Click "Đổi ngay" → Dialog xác nhận
+2. Xác nhận → Trừ điểm → Lưu vào `rewardsRedeemed`
+3. Toast thông báo: "✅ Đổi quà thành công! Còn X điểm"
+
+#### 5. BẢNG XẾP HẠNG
+**Layout:** Bảng dạng Material Data Table
+
+| Hạng | Avatar | Tên         | Điểm | Hạng      | Xu hướng |
+|------|--------|-------------|------|-----------|----------|
+| 🥇   | [img]  | Nguyễn Văn A| 245  | 💎 Kim Cương | ↑ +12 |
+| 🥈   | [img]  | Trần Thị B  | 198  | 🥇 Vàng     | → 0   |
+| 🥉   | [img]  | Lê Văn C    | 175  | 🥇 Vàng     | ↓ -5  |
+
+**Lọc:**
+- Chip filter: `[Tuần này] [Tháng này] [Tất cả]` (active: tím)
+- Xu hướng: So sánh với tuần/tháng trước
+
+**Nút Export:** Download file `xephang_[tên lớp]_[ngày].xlsx`
+
+#### 6. IMPORT/EXPORT EXCEL
+**Import:**
+- Upload .xlsx/.csv
+- Parse cột: `Tên` hoặc `Họ và tên` (required), `Điểm` (optional, default 0)
+- Hiển thị preview → Xác nhận → Merge vào danh sách
+
+**Export:**
+File Excel gồm:
+- Sheet "Danh sách": Tên | Điểm | Hạng | Tổng cộng | Tổng trừ
+- Sheet "Lịch sử": Tên | Thời gian | Thay đổi | Lý do | Điểm sau
+- Sheet "Quà đã đổi": Tên | Quà | Điểm tiêu | Thời gian
+
+---
+
+### YÊU CẦU KỸ THUẬT
+- **Cấu trúc:** index.html (CSS + JS nhúng inline)
+- **CDN:**
+  - SheetJS (`https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js`)
+  - Canvas Confetti (`https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js`)
+  - Chart.js (cho tab Thống kê)
+- **Storage:** LocalStorage
+  - Key: `classroomData`
+  - Value: `{ students: [], rewards: [], settings: {} }`
+- **Data model:**
+```javascript
+{
+  students: [
+    {
+      id: "uuid",
+      name: "string",
+      avatar: "url | null",
+      totalPoints: 125,
+      rank: "gold", // bronze | silver | gold | diamond
+      pointHistory: [
+        { timestamp: 1704088800000, change: +5, reason: "...", pointsAfter: 125 }
+      ],
+      rewardsRedeemed: [
+        { timestamp: 1704088800000, reward: "Vé miễn kiểm tra", pointsSpent: 40 }
+      ]
+    }
+  ]
+}
+```
+- **Responsive:** Mobile-first, breakpoint: 640px (mobile), 768px (tablet), 1024px (desktop)
+- **Error handling:**
+  - File Excel sai format → Toast lỗi
+  - Học sinh trùng tên → Confirm "Thêm số thứ tự vào tên?"
+  - Điểm âm → Không cho phép, hiển thị warning
+
+---
+
+### OUTPUT BẮT BUỘC
+1. File `index.html` đầy đủ (CSS + JS nhúng)
+2. Dữ liệu mẫu: 5 học sinh với điểm và lịch sử khác nhau
+3. Code có comment tiếng Việt rõ ràng
+4. Chạy trực tiếp trên trình duyệt, không cần build
+
+---
+
+**Tóm tắt thay đổi so với app gốc:**
+- ✅ Thứ hạng: Đồng/Bạc/Vàng/Kim Cương thay vì Hạt/Nảy mầm/Cây con/Cây to
+- ✅ Giao diện: Material Design 3 thay vì Apple minimal
+- ✅ Màu sắc: Tím/Cam thay vì Xanh lá
+- ✅ Layout: Card elevated + Drawer thay vì Grid thẻ + Modal
+- ✅ Icon: Huy hiệu kim loại/đá quý thay vì emoji cây
+- ✅ Progress bar: Segmented bar thay vì thanh đơn giản

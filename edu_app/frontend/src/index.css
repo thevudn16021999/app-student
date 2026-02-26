@@ -1,0 +1,49 @@
+/* ============ Global Styles - Material Design 3 ============ */
+:root {
+  --primary: #6750A4;
+  --primary-light: #D0BCFF;
+  --accent: #FF6D00;
+  --accent-light: #FFE0B2;
+  --bg: #FAF9F6;
+  --surface: #FFFFFF;
+  --text-primary: #1C1B1F;
+  --text-secondary: #49454F;
+  --outline: #79747E;
+  --error: #B3261E;
+  --success: #2E7D32;
+
+  /* Rank colors */
+  --bronze: #CD7F32;
+  --silver: #C0C0C0;
+  --gold: #FFD700;
+  --diamond: #B9F2FF;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  background-color: var(--bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--outline);
+  border-radius: 3px;
+}
